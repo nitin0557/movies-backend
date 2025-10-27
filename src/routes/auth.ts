@@ -46,26 +46,30 @@ router.post("/login", async (req, res) => {
 
     const { email, password } = parsed.data;
 
-    // Check if user exists
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user)
-      return res.status(400).json({ message: "Invalid email or password" });
+    console.log("Login attempt for:", email);
 
-    // Compare password
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      console.log("User not found:", email);
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match:", isMatch);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid email or password" });
 
-    // Generate token
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    res.json({ message: "Login successful", token });
+    return res.json({ message: "Login successful", token });
   } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("🔥 Login Error:", err);
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    return res.status(500).json({ message: "Server error", error: errorMessage });
   }
 });
+
 
 export default router;
