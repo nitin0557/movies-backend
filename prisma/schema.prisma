@@ -22,6 +22,7 @@ model Favorite {
   title      String
   type       String
   director   String?
+  budget     String?
   location   String?
   duration   String?
   yearOrTime String?
