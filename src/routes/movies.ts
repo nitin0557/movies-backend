@@ -1,16 +1,15 @@
 import express from "express";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { z } from "zod";
-import { favoriteCreateSchema, favoriteUpdateSchema } from "../validation/movie.schema";
+import {
+  favoriteCreateSchema,
+  favoriteUpdateSchema,
+} from "../validation/movie.schema";
 import { authenticate } from "../middleware/authMiddleware";
-
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// -------------------------
-// GET (with pagination + search)
-// -------------------------
 router.get("/", async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -18,13 +17,12 @@ router.get("/", async (req, res) => {
     const search = req.query.search?.toString() || "";
     const skip = (page - 1) * limit;
 
-    // Build search query conditionally
     const where = search
       ? {
           OR: [
-            { title: { contains: search, mode: 'insensitive' as any } },
-            { director: { contains: search, mode: 'insensitive' as any } },
-            { location: { contains: search, mode: 'insensitive' as any } },
+            { title: { contains: search, mode: "insensitive" as any } },
+            { director: { contains: search, mode: "insensitive" as any } },
+            { location: { contains: search, mode: "insensitive" as any } },
           ],
         }
       : {};
@@ -55,10 +53,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// -------------------------
-// CREATE
-// -------------------------
-router.post("/",authenticate, async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   try {
     const parsed = favoriteCreateSchema.parse(req.body);
     const created = await prisma.favorite.create({ data: parsed });
@@ -75,10 +70,7 @@ router.post("/",authenticate, async (req, res) => {
   }
 });
 
-// -------------------------
-// UPDATE
-// -------------------------
-router.put("/:id",authenticate, async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
   try {
     const id = req.params.id;
     const parsed = favoriteUpdateSchema.parse(req.body);
@@ -102,10 +94,7 @@ router.put("/:id",authenticate, async (req, res) => {
   }
 });
 
-// -------------------------
-// DELETE
-// -------------------------
-router.delete("/:id",authenticate, async (req, res) => {
+router.delete("/:id", authenticate, async (req, res) => {
   try {
     const id = req.params.id;
 

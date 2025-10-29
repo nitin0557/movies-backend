@@ -8,10 +8,6 @@ const router = express.Router();
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "mysecretkey";
 
-
-
-
-
 router.post("/register", async (req, res) => {
   try {
     const parsed = registerSchema.safeParse(req.body);
@@ -67,9 +63,10 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     console.error("🔥 Login Error:", err);
     const errorMessage = err instanceof Error ? err.message : String(err);
-    return res.status(500).json({ message: "Server error", error: errorMessage });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: errorMessage });
   }
 });
-
 
 export default router;
