@@ -1,5 +1,4 @@
 import express from "express";
-import axios from "axios";
 
 const airouter = express.Router();
 
@@ -33,22 +32,35 @@ User Request:
 ${message}
 `;
 
-    const response = await axios.post(
+    const response = await fetch(
       "http://localhost:11434/api/generate",
       {
-        model: "llama3",
-        prompt,
-        stream: false,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama3.1",
+          prompt,
+          stream: false,
+        }),
       }
     );
 
-    const result = JSON.parse(response.data.response);
+    if (!response.ok) {
+      throw new Error(`Ollama API failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const result = JSON.parse(data.response);
 
     res.json(result);
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
+    console.error("AI Error:", err);
+
     res.status(500).json({
-      error: "AI processing failed",
+      error: err.message || "AI processing failed",
     });
   }
 });
