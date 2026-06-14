@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import moviesRouter from "./routes/movies";
 import authRouter from "./routes/auth"; 
+import airouter from "./routes/ai";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter); 
 app.use("/api/favorites", moviesRouter); 
+app.use("/api/ai", airouter);
 
 
 app.get("/", (req, res) => {
